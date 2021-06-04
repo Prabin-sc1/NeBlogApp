@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "488804975450",
+    "project_id": "neblogprojectonly",
+    "storage_bucket": "neblogprojectonly.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:488804975450:android:a909f90013ea2acf6f6963",
+        "android_client_info": {
+          "package_name": "com.sc1stprabin.neblog"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "488804975450-3kh8r79g4beoiniogbcdgcsrmsk0cs1b.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCmlQ-vty2WTEUuMA4ffLa9CjfN1neMlTA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "488804975450-3kh8r79g4beoiniogbcdgcsrmsk0cs1b.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

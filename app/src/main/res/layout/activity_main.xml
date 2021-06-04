@@ -91,12 +91,13 @@
                 android:layout_marginTop="10dp"
                 android:layout_height="wrap_content">
 
-               <com.google.android.material.textfield.TextInputEditText
+                <com.google.android.material.textfield.TextInputEditText
 
-                    android:textColorHint="@color/grey"
+                    android:id="@+id/edtEmailId"
                     android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:hint="Enter username or email"
-                    android:layout_height="wrap_content"/>
+                    android:textColorHint="@color/grey" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -107,11 +108,12 @@
 
                 <com.google.android.material.textfield.TextInputEditText
 
+                    android:id="@+id/edtPasswordId"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:hint="Enter password"
                     android:inputType="textPassword"
-                    android:textColorHint="@color/grey"
-                    android:hint="Enter password"/>
+                    android:textColorHint="@color/grey" />
             </com.google.android.material.textfield.TextInputLayout>
 
 
@@ -121,13 +123,14 @@
                 android:layout_height="wrap_content"
                 app:passwordToggleEnabled="true"
                 app:passwordToggleTint="@color/grey">
+
                 <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/edtConfirmPwdId"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textPassword"
-                    android:textColorHint="@color/grey"
                     android:hint="Confirm password"
-                    />
+                    android:inputType="textPassword"
+                    android:textColorHint="@color/grey" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <TextView
