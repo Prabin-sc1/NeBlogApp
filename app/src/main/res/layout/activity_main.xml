@@ -6,6 +6,9 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+
+
+
     <ImageView
         android:id="@+id/imageView3"
         android:layout_width="wrap_content"
@@ -170,17 +173,21 @@
                 android:layout_marginTop="1dp"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginEnd="1dp">
+
                 <ImageView
+                    android:id="@+id/googleImgViewId"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/google"/>
+                    android:src="@drawable/google" />
+
                 <ImageView
+                    android:id="@+id/facebookId"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="10dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/fb"
-                    android:backgroundTint="@color/grey"/>
+                    android:backgroundTint="@color/grey"
+                    android:src="@drawable/fb" />
                 <ImageView
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="10dp"
@@ -198,27 +205,27 @@
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/clWelcomeId"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@drawable/back"
-        tools:visibility="gone"
-        android:elevation="50dp">
+<!--    <androidx.constraintlayout.widget.ConstraintLayout-->
+<!--        android:id="@+id/clWelcomeId"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent"-->
+<!--        android:background="@drawable/back"-->
+<!--        tools:visibility="gone"-->
+<!--        android:elevation="50dp">-->
 
-        <ImageView
-            android:id="@+id/imageView"
-            android:layout_width="200dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="400dp"
-            android:src="@drawable/neblog"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+<!--        <ImageView-->
+<!--            android:id="@+id/imageView"-->
+<!--            android:layout_width="200dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginTop="400dp"-->
+<!--            android:src="@drawable/neblog"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintHorizontal_bias="0.5"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toTopOf="parent" />-->
 
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+<!--    </androidx.constraintlayout.widget.ConstraintLayout>-->
 
 
 
