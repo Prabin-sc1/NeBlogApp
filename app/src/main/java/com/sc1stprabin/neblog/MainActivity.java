@@ -1,7 +1,4 @@
 package com.sc1stprabin.neblog;
-
-
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -15,7 +12,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-//import com.facebook.CallbackManager;
+import com.facebook.AccessToken;
+import com.facebook.AccessTokenTracker;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.login.LoginManager;
+import com.facebook.login.LoginResult;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -27,16 +30,19 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
 import org.jetbrains.annotations.NotNull;
-//import com.facebook.FacebookSdk;
-//import com.facebook.appevents.AppEventsLogger;
+import com.facebook.FacebookSdk;
+
+import java.util.Arrays;
 
 
 public class MainActivity extends AppCompatActivity {
+
     private ConstraintLayout constraintLayout;
 
     private TextView login, signup;
@@ -46,19 +52,24 @@ public class MainActivity extends AppCompatActivity {
 
     private TextInputEditText email, password, confirmPwd;
 
-    //private CallbackManager mCallbackManager;
+    private CallbackManager mCallbackManager;
 
+    private FirebaseAuth.AuthStateListener mAuthStateListener;
 
 
     private boolean isSignup = true;
 
-    private ImageView googleImg, facebookImg;
+    private ImageView googleImg;
+    private ImageView facebookImg;
+
 
     GoogleSignInClient mGoogleSignInClient;
     private FirebaseAuth mAuth;
 
+    private static final String TAG = "FacebookAuthentication";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        mCallbackManager = CallbackManager.Factory.create();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
       //  constraintLayout = findViewById(R.id.clWelcomeId);
@@ -69,10 +80,70 @@ public class MainActivity extends AppCompatActivity {
         forgetPwd = findViewById(R.id.forgerPwd);
         edtConfirm = findViewById(R.id.edtConfirm);
 
+        facebookImg = findViewById(R.id.facebookId);
         mAuth = FirebaseAuth.getInstance();
+        FacebookSdk.sdkInitialize(getApplicationContext());
+
+
+        facebookImg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LoginManager.getInstance().logInWithReadPermissions(MainActivity.this, Arrays.asList("email"));
+                LoginManager.getInstance().registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
+                    @Override
+                    public void onSuccess(LoginResult loginResult) {
+                        Log.d(TAG,"onSuccess"+loginResult);
+                        handleFacebookToken(loginResult.getAccessToken());
+
+                    }
+
+                    @Override
+                    public void onCancel() {
+                        Log.d(TAG,"onCancel");
+                    }
+
+                    @Override
+                    public void onError(FacebookException error) {
+                        Log.d(TAG,"onError"+error);
+                    }
+                });
+            }
+        });
+
+
+        mAuthStateListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull @NotNull FirebaseAuth firebaseAuth) {
+                FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+                if(firebaseUser != null){
+                    updateUI(firebaseUser);
+                    //startActivity(new Intent(getApplicationContext(), BlogsActivity.class));
+                }
+                else {
+                    updateUI(null);
+
+                }
+            }
+        };
+
+        AccessTokenTracker accessTokenTracker = new AccessTokenTracker() {
+            @Override
+            protected void onCurrentAccessTokenChanged(AccessToken oldAccessToken, AccessToken currentAccessToken) {
+                if (currentAccessToken != null) {
+                    mAuth.signOut();
+                }
+            }
+        };
+
+
+
+
 
         googleImg = findViewById(R.id.googleImgViewId);
-        facebookImg  = findViewById(R.id.facebookId);
+
+
+        mCallbackManager = CallbackManager.Factory.create();
+
 
         //signing with google process
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -174,12 +245,10 @@ public class MainActivity extends AppCompatActivity {
                            Toast.makeText(MainActivity.this, "password doesn't match",Toast.LENGTH_SHORT).show();
                        }
                     }
-                      //Toast.makeText(getApplicationContext(),"Signing Up!",Toast.LENGTH_SHORT).show();
+
 
                 } else {
-                    //Toast.makeText(getApplicationContext(),"Log in!",Toast.LENGTH_SHORT).show();
-//                     emailVal = email.getText().toString();
-//                     pwdVal = password.getText().toString();
+
                     //why this because we are in same activity
                     if (!emailVal.isEmpty() && !pwdVal.isEmpty()) {
 
@@ -217,15 +286,69 @@ public class MainActivity extends AppCompatActivity {
 //        });
     }
 
+    private void handleFacebookToken(AccessToken accessToken) {
+        Log.d(TAG,"handleFacebookToken"+accessToken);
+
+        AuthCredential credential = FacebookAuthProvider.getCredential(accessToken.getToken());
+        mAuth.signInWithCredential(credential).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull @NotNull Task<AuthResult> task) {
+                if(task.isSuccessful()){
+                    Log.d(TAG,"sigining with credential: successful");
+                    FirebaseUser user = mAuth.getCurrentUser();
+                    updateUI(user);
+                    //startActivity(new Intent(MainActivity.this,BlogsActivity.class));
+                    Toast.makeText(getApplicationContext(),"Signed in with fb",Toast.LENGTH_SHORT).show();
+                }else {
+                    Log.d(TAG,"signing with credential: failure",task.getException());
+                    Toast.makeText(getApplicationContext(),task.getException().getLocalizedMessage(),Toast.LENGTH_SHORT).show();
+                    updateUI(null);
+                }
+            }
+        });
+    }
+
+    @Override
+    public void onActivityReenter(int resultCode, Intent data) {
+        super.onActivityReenter(resultCode, data);
+    }
+
+    private void updateUI(FirebaseUser user) {
+        if(user != null){
+            startActivity(new Intent(getApplicationContext(),BlogsActivity.class));
+        }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mAuth.addAuthStateListener(mAuthStateListener);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if(mAuthStateListener != null){
+            mAuth.removeAuthStateListener(mAuthStateListener);
+        }
+    }
+
     int RC_SIGN_IN = 11;
     private void signIn() {
+      //  Intent signInIntentt = .getSignInIntent();
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
-        Log.d("MESSAGE","please check here coz startActivityForResult() is deprecated ");
+        Log.d(TAG,"please check here coz startActivityForResult() is deprecated ");
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        //facebook
+        mCallbackManager.onActivityResult(requestCode, resultCode, data);
+
+
+
+
         super.onActivityResult(requestCode, resultCode, data);
 
         // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
@@ -254,13 +377,15 @@ public class MainActivity extends AppCompatActivity {
                             FirebaseUser user = mAuth.getCurrentUser();
                             startActivity(new Intent(MainActivity.this,BlogsActivity.class));
                             Toast.makeText(getApplicationContext(),"Signed in with google",Toast.LENGTH_SHORT).show();
-                          //  updateUI(user);
+                            updateUI(user);
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w("TAG", "signInWithCredential:failure", task.getException());
-                          //  updateUI(null);
+                            updateUI(null);
                         }
                     }
                 });
     }
+    //facebook
+
 }
